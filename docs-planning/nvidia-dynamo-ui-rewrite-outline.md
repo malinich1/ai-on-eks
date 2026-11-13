@@ -95,7 +95,7 @@ UI: `Tabs` (Good fit / Not a fit / Compare). The discovery questions go in an in
     | Qwen3-32B | 18 × ~4 GB | 18 | 100 GiB | 54 s |
     | GLM-5.3-Flash | 62 × ~5.4 GB | 30 | 200 GiB | 184 s |
     | GLM-5.3 | 141 × ~5.5 GB | 30 | 200 GiB | 413 s |
-    | Nemotron-3-Ultra | 225 × ~5 GB | 35 | 200 GiB | 943 s |
+    | Nemotron-3-Ultra | 225 × ~5 GB | 35 | 200 GiB | 650 s |
 
   - **[NEW][ERZ]** Sizing rule: `storageSize ≈ largest file × fileWorkers`.
   - **[ERZ]** Caution `Admonition` for a sync pod stuck Pending. Causes: instance type not available in region/AZ, vCPU quota, NodePool restrictions. Relax constraints in this order: `requireNetworkBandwidth` → `storageSize` → `fileWorkers`.
@@ -123,7 +123,7 @@ UI:
 
     | Size | Model | Instance | Manifests |
     |---|---|---|---|
-    | Small | Nemotron-3.5-Bolt-E4B | g6e | (upstream only, see open items) |
+    | Small | Nemotron-3.5-Bolt-E4B | g6e, 1 GPU (TP1) | `g6e-agg-s3` |
     | Medium | Qwen3-32B | p5.48xlarge H100, TP4 | `h100-agg`, `h100-agg-mx-s3` |
     | Medium | GLM-5.3-Flash | g7e.48xlarge, TP8 | `g7e-agg-mx-s3`, `g7e-agg-mx-s3-local` |
     | Large | GLM-5.3 | p6-b300.48xlarge, TP8 | `b300-agg-mx-s3`, `b300-agg-mx-s3-local` |
@@ -142,7 +142,7 @@ UI:
     | Networking | EFA-enabled nodes; 16 EFA interfaces per worker on p6-b300 |
     | Placement | Workers in the same AZ (required zone podAffinity) |
     | KV transfer | `NixlConnector` with the LIBFABRIC backend |
-    | Runtime image | EFA build (`vllm-runtime:1.6.0-efa`) |
+    | Runtime image | EFA build (`vllm-runtime:1.6.2-efa`) |
     | Routing | KV events from the prefill worker |
     | Sizing | Prefill vs decode worker ratio |
 
@@ -165,10 +165,10 @@ UI:
     - `sharedMemorySize` of 50–100 Gi
     - `startupProbe` `failureThreshold: 540` (~90 min) and `VLLM_ENGINE_READY_TIMEOUT_S=5400`, to set expectations for large-model startup
   - 5.4.3 **[NEW][ERZ]** Image and version matrix:
-    - Frontend: `dynamo-frontend:1.6.0`
-    - Nemotron worker: `vllm-runtime:1.6.0-efa`
+    - Frontend: `dynamo-frontend:1.6.2`
+    - EFA workers (Qwen3-32B, Nemotron-3-Ultra): `vllm-runtime:1.6.2-efa`; Bolt-E4B on g6e: `vllm-runtime:1.6.2`
     - `modelexpress-server:0.7.0`
-    - GLM recipes: custom `${IMAGE}`, plus `runtimeVersionOverride: 1.5.1`
+    - GLM recipes: `IMAGE=public.ecr.aws/ai-on-eks/ai-dynamo/vllm-runtime:1.7.0-27f6052cd5-mx0.8.0-6b7d4188-efa`
   - 5.4.4 Links to the per-model recipe READMEs.
 
 UI:
@@ -258,9 +258,9 @@ UI: accordion of `<details>` blocks, one per symptom.
 
 ## Open items
 
-- [ ] **Profiler (7) and Planner (8):** not covered in Erez's commit. Source the content from the Dynamo docs or new testing. The commands, CRDs, and tools in 7.3–7.5 are placeholders.
-- [ ] **Nemotron-3.5-Bolt-E4B on g6e:** listed upstream but not in Erez's commit. Confirm its source, since it's the only "Small" tier recipe.
-- [ ] **GLM `${IMAGE}`:** placeholder in the GLM recipes. Get the actual image from Erez.
+- [ ] **Profiler (7) and Planner (8):** not covered in Erez's commit. The draft page uses the upstream Dynamo DGDR/AIPerf docs and is marked "Not yet validated on this blueprint". Needs an end-to-end test on the cluster.
+- [x] **Nemotron-3.5-Bolt-E4B on g6e:** added in Erez's latest upstream commit (`cfccca1`), recipe `g6e-agg-s3`.
+- [x] **GLM `${IMAGE}`:** set in the upstream recipe READMEs to `public.ecr.aws/ai-on-eks/ai-dynamo/vllm-runtime:1.7.0-27f6052cd5-mx0.8.0-6b7d4188-efa`.
 - [ ] **Model size buckets:** confirm GLM-5.3 and GLM-5.3-Flash parameter counts.
 - [ ] **Caching and ModelExpress placement:** keep them under Prerequisites (4.4–4.5), or move them to a "Common setup" block at the top of section 5.
 - [ ] **Section 9:** my addition, not in the original outline. Keep or drop.
