@@ -20,7 +20,7 @@ Legend: **[NEW]** = not on the current page. **[ERZ]** = sourced from Erez's com
   - One-paragraph definition of Dynamo
   - "What you get": 5 bullets
   - `StatusGrid`: EKS version, region, namespace, ArgoCD, Karpenter, EFA + NIXL, S3/EFS, first deploy 20–30 min
-  - **[NEW]** "Jump to" row: Fit check · Deploy · Serving patterns · Performance · Profiler
+  - **[NEW]** "Jump to" row: Fit check · Deploy · Blueprints · Performance · Profiler
 - Collapsed **GPU capacity** note: Capacity Blocks, plus the `ai-on-eks=true` tag.
 
 ---
@@ -31,7 +31,7 @@ Legend: **[NEW]** = not on the current page. **[ERZ]** = sourced from Erez's com
 - 1.2 Why it matters at scale: running across multiple GPUs and nodes, KV-aware routing, prefill/decode split.
 - 1.3 How Dynamo fits on AWS: EKS, EFA, Capacity Blocks. Link to the Dynamo docs.
 
-UI: short prose, plus a tip `Admonition`: "New to Dynamo? Read sections 1–3, then jump to Serving patterns."
+UI: short prose, plus a tip `Admonition`: "New to Dynamo? Read sections 1–3, then jump to Blueprints."
 
 ---
 
@@ -109,7 +109,7 @@ UI:
 
 ---
 
-## 5. Serving patterns: aggregated and disaggregated 🧾
+## 5. Blueprints 🧾
 
 - 5.1 **Choosing a serving mode**
   - Each mode defined in two sentences, with a side-by-side topology diagram.
